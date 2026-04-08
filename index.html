@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vastu AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between">
+    <h1 class="text-xl font-bold text-blue-600">VASTU AI</h1>
+  </nav>
+
+  <!-- Hero -->
+  <div class="text-center py-12 px-4">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
+      Get Instant Vastu Advice 🏠
+    </h1>
+    <p class="mt-3 text-gray-600">
+      Apne room ka type aur direction select karo
+    </p>
+  </div>
+
+  <!-- Form -->
+  <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow">
+
+    <!-- Room Type -->
+    <label class="block mb-2 font-semibold">Select Room</label>
+    <select id="room" class="w-full p-3 border rounded-lg mb-4">
+      <option>Bedroom</option>
+      <option>Kitchen</option>
+      <option>Living Room</option>
+      <option>Bathroom</option>
+      <option>Office</option>
+    </select>
+
+    <!-- Direction -->
+    <label class="block mb-2 font-semibold">Facing Direction</label>
+    <select id="direction" class="w-full p-3 border rounded-lg mb-4">
+      <option>North</option>
+      <option>South</option>
+      <option>East</option>
+      <option>West</option>
+    </select>
+
+    <!-- Button -->
+    <button onclick="getVastu()" class="w-full bg-blue-600 text-white py-3 rounded-lg">
+      Get Vastu Tips
+    </button>
+
+    <!-- Output -->
+    <div id="output" class="mt-6 text-gray-700"></div>
+
+  </div>
+
+  <!-- Script -->
+  <script>
+    function getVastu() {
+      const room = document.getElementById("room").value;
+      const direction = document.getElementById("direction").value;
+
+      let tips = "";
+
+      if (room === "Bedroom") {
+        tips = "🛏 Bedroom Tips:\n- Bed south-west me rakho\n- Sote waqt head south direction me ho\n- Mirror bed ke samne na ho";
+      }
+
+      else if (room === "Kitchen") {
+        tips = "🍳 Kitchen Tips:\n- Gas stove south-east me ho\n- Cooking east face karke karo\n- Water sink north side me ho";
+      }
+
+      else if (room === "Living Room") {
+        tips = "🛋 Living Room Tips:\n- Entrance east ya north ho\n- Sofa south ya west wall ke paas rakho\n- TV south-east me ho";
+      }
+
+      else if (room === "Bathroom") {
+        tips = "🚿 Bathroom Tips:\n- North-west best location hai\n- Toilet seat south-north direction me ho\n- Ventilation zaruri hai";
+      }
+
+      else if (room === "Office") {
+        tips = "💼 Office Tips:\n- Desk east ya north face kare\n- Back solid wall ho\n- Entrance visible hona chahiye";
+      }
+
+      // Direction add karna (smart touch)
+      tips += "\n\n📍 Direction Advice:\nFacing " + direction + " generally good hai, but balance elements maintain karo.";
+
+      document.getElementById("output").innerText = tips;
+    }
+  </script>
+
+</body>
+</html>
