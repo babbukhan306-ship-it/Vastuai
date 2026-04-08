@@ -6,23 +6,33 @@ export default async function handler(req, res) {
 
   const { room, direction } = req.body;
 
-  const prompt = `Give vastu tips for a ${room} facing ${direction} in Indian homes. Keep it short and practical.`;
+  const prompt = `Give short and practical vastu tips for a ${room} facing ${direction} in Indian homes.`;
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }]
+            }
+          ]
+        })
+      }
+    );
 
     const data = await response.json();
-    res.status(200).json({ result: data.choices[0].message.content });
+
+    const text =
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No response from AI";
+
+    res.status(200).json({ result: text });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
