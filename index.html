@@ -5,31 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vastu AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Razorpay -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body class="bg-gray-100">
 
   <!-- Navbar -->
-  <nav class="bg-white shadow p-4 flex justify-between">
+  <nav class="bg-white shadow p-4 text-center">
     <h1 class="text-xl font-bold text-blue-600">VASTU AI</h1>
   </nav>
 
   <!-- Hero -->
-  <div class="text-center py-12 px-4">
-    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
-      Get Instant Vastu Advice 🏠
+  <div class="text-center py-10 px-4">
+    <h1 class="text-3xl font-bold text-gray-800">
+      AI Powered Vastu Advice 🏠
     </h1>
-    <p class="mt-3 text-gray-600">
-      Apne room ka type aur direction select karo
+    <p class="text-gray-600 mt-2">
+      Room select karo aur instant vastu tips pao
     </p>
   </div>
 
   <!-- Form -->
   <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow">
 
-    <!-- Room Type -->
-    <label class="block mb-2 font-semibold">Select Room</label>
-    <select id="room" class="w-full p-3 border rounded-lg mb-4">
+    <label class="font-semibold">Room Type</label>
+    <select id="room" class="w-full p-3 border rounded-lg mt-2 mb-4">
       <option>Bedroom</option>
       <option>Kitchen</option>
       <option>Living Room</option>
@@ -37,58 +39,95 @@
       <option>Office</option>
     </select>
 
-    <!-- Direction -->
-    <label class="block mb-2 font-semibold">Facing Direction</label>
-    <select id="direction" class="w-full p-3 border rounded-lg mb-4">
+    <label class="font-semibold">Direction</label>
+    <select id="direction" class="w-full p-3 border rounded-lg mt-2 mb-4">
       <option>North</option>
       <option>South</option>
       <option>East</option>
       <option>West</option>
     </select>
 
-    <!-- Button -->
-    <button onclick="getVastu()" class="w-full bg-blue-600 text-white py-3 rounded-lg">
-      Get Vastu Tips
+    <!-- Buttons -->
+    <button onclick="getVastu()" class="w-full bg-blue-600 text-white py-3 rounded-lg mb-3">
+      Get AI Vastu Advice
+    </button>
+
+    <button onclick="downloadPDF()" class="w-full bg-green-600 text-white py-3 rounded-lg mb-3">
+      Download PDF Report
+    </button>
+
+    <button onclick="payNow()" class="w-full bg-purple-600 text-white py-3 rounded-lg">
+      Get Premium Report ₹29
     </button>
 
     <!-- Output -->
-    <div id="output" class="mt-6 text-gray-700"></div>
+    <div id="output" class="mt-6 text-gray-700 whitespace-pre-line"></div>
 
   </div>
 
   <!-- Script -->
   <script>
-    function getVastu() {
+
+    async function getVastu() {
       const room = document.getElementById("room").value;
       const direction = document.getElementById("direction").value;
 
-      let tips = "";
+      document.getElementById("output").innerText = "Generating AI advice... ⏳";
 
-      if (room === "Bedroom") {
-        tips = "🛏 Bedroom Tips:\n- Bed south-west me rakho\n- Sote waqt head south direction me ho\n- Mirror bed ke samne na ho";
+      try {
+        const res = await fetch("/api/vastu", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ room, direction })
+        });
+
+        const data = await res.json();
+        document.getElementById("output").innerText = data.result;
+
+      } catch (err) {
+        document.getElementById("output").innerText = "Error: " + err.message;
       }
-
-      else if (room === "Kitchen") {
-        tips = "🍳 Kitchen Tips:\n- Gas stove south-east me ho\n- Cooking east face karke karo\n- Water sink north side me ho";
-      }
-
-      else if (room === "Living Room") {
-        tips = "🛋 Living Room Tips:\n- Entrance east ya north ho\n- Sofa south ya west wall ke paas rakho\n- TV south-east me ho";
-      }
-
-      else if (room === "Bathroom") {
-        tips = "🚿 Bathroom Tips:\n- North-west best location hai\n- Toilet seat south-north direction me ho\n- Ventilation zaruri hai";
-      }
-
-      else if (room === "Office") {
-        tips = "💼 Office Tips:\n- Desk east ya north face kare\n- Back solid wall ho\n- Entrance visible hona chahiye";
-      }
-
-      // Direction add karna (smart touch)
-      tips += "\n\n📍 Direction Advice:\nFacing " + direction + " generally good hai, but balance elements maintain karo.";
-
-      document.getElementById("output").innerText = tips;
     }
+
+    async function downloadPDF() {
+      const text = document.getElementById("output").innerText;
+
+      if (!text) {
+        alert("Pehle Vastu advice generate karo");
+        return;
+      }
+
+      const res = await fetch("/api/pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text })
+      });
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      window.open(url);
+    }
+
+    function payNow() {
+      var options = {
+        key: "YOUR_RAZORPAY_KEY",
+        amount: 2900,
+        currency: "INR",
+        name: "Vastu AI",
+        description: "Premium Report",
+        handler: function () {
+          alert("Payment Successful 🎉");
+        }
+      };
+
+      var rzp = new Razorpay(options);
+      rzp.open();
+    }
+
   </script>
 
 </body>
